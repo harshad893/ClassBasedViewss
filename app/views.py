@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import View,TemplateView
+from django.views.generic import View,TemplateView,FormView
 # Create your views here.
 # FBV for returning string
 from app.forms import *
@@ -45,8 +45,31 @@ class Cbv_form(View):
         if fd.is_valid():
             return HttpResponse(str(fd.cleaned_data))
 
-
+   
 #rendering HTML with TEmplateView
 
 class Cbv(TemplateView):
     template_name='Cbv_template.html'
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+        context['name']='Ashu'
+        context['age']=2
+        context['form']=NameForm()
+        return context
+    def post(self,request):
+        fd=NameForm(request.POST)
+        if fd.is_valid():
+            return HttpResponse(str(fd.cleaned_data))
+
+class Cbv_formview(FormView):
+    form_class=NameForm
+    template_name='Cbv_formview.html'
+    def form_valid(self,form):
+        return HttpResponse(str(form.cleaned_data))
+
+class Cbv_modelform(FormView):
+    form_class=TopicForm
+    template_name='Cbv_modelform.html'
+    def form_valid(self,form):
+        form.save()
+        return HttpResponse('Data is Inserted')
